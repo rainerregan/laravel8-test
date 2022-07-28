@@ -10,7 +10,7 @@
         @include('posts.partials.form')
 
         <div>
-            <input type="submit" value="Update">
+            <input class="btn btn-primary btn-block" type="submit" value="Update">
         </div>
     </form>
 @endsection
