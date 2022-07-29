@@ -14,8 +14,10 @@ class ExampleTest extends TestCase
      */
     public function testBasicTest()
     {
+        // Visit URL
         $response = $this->get('/');
 
+        // Melihat apakah response code return 200
         $response->assertStatus(200);
     }
 }
