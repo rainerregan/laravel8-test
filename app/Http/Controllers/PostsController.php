@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\DB;
 
 class PostsController extends Controller
 {
@@ -16,8 +17,27 @@ class PostsController extends Controller
      */
     public function index()
     {
+        // Enable Query Logging
+        // DB::enableQueryLog();
+
+        // $posts = BlogPost::with('comments');
+
+        // foreach($posts as $post){
+        //     foreach($post->comments as $comment){
+        //         echo $comment->content;
+        //     }
+        // }
+
+        // dd(DB::getQueryLog());
+
+
         // Menampilkan halaman index
-        return view('posts.index', ['posts' => BlogPost::orderBy('created_at', 'desc')->take(5)->get()]); // Menampilkan semua data
+        return view(
+            'posts.index',
+            [
+                'posts' => BlogPost::withCount('comments')->get()
+            ]
+        ); // Menampilkan semua data
     }
 
     /**
@@ -73,7 +93,12 @@ class PostsController extends Controller
     {
         // Menampilkan halaman show
         // abort_if(!isset($this->posts[$id]), 404);
-        return view('posts.show', ['post' => BlogPost::findOrFail($id)]);
+        return view(
+            'posts.show',
+            [
+                'post' => BlogPost::with('comments')->findOrFail($id)
+            ]
+        );
     }
 
     /**

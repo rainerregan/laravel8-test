@@ -6,6 +6,7 @@ use App\Models\BlogPost;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Comment;
 
 /*
  |-------------------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ class PostTest extends TestCase
         $response->assertSeeText('No posts found!');
     }
 
-    public function testSee1BlogPostWhenThereIs1(){
+    public function testSee1BlogPostWhenThereIs1WithComments(){
 
         // Arrange: Membuat dummy database model
         $post = $this->createDummyBlogPost();
@@ -38,9 +39,24 @@ class PostTest extends TestCase
 
         // Assert
         $response->assertSeeText($post->title);
+        $response->assertSeeText('No comments yet');
 
         // Mengecek apakah database punya data yang disimpan
         $this->assertDatabaseHas('blog_posts', $post->getAttributes());
+    }
+
+    public function testSee1BlogPostWithComments(){
+        // Arrange
+        $post = $this->createDummyBlogPost();
+
+        Comment::factory()->count(4)->create([
+            'blog_post_id' => $post->id
+        ]);
+
+        $response = $this->get('/posts');
+
+        $response->assertSeeText('4 comments');
+
     }
 
     public function testStoreValid(){
@@ -129,11 +145,14 @@ class PostTest extends TestCase
     }
 
     private function createDummyBlogPost(): BlogPost{
-        $post = new BlogPost();
-        $post->title = 'New title';
-        $post->content = 'Content of the blog post';
-        $post->save();
+        // $post = new BlogPost();
+        // $post->title = 'New title';
+        // $post->content = 'Content of the blog post';
+        // $post->save();
+        // return $post;
 
-        return $post;
+        // Using model factory
+        return BlogPost::factory()->newTitle()->create();
+
     }
 }
