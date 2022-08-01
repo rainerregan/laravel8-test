@@ -31,5 +31,11 @@ class AuthServiceProvider extends ServiceProvider
             // Mengecek apakah user dapat mengedit post
             return $user->id == $post->user_id;
         });
+
+        // Gate untuk delete post
+        Gate::define('delete-post', function($user, $post){
+            // Mengecek apakah user dapat mengedit post
+            return $user->id == $post->user_id;
+        });
     }
 }

@@ -122,11 +122,16 @@ class PostsController extends Controller
         $post = BlogPost::findOrFail($id);
 
         // Verify apakah user dapat mengedit data posting
-        if(Gate::denies('update-post', $post)){
-            // Abort akan redirect ke error page
-            // 403 adalah code untuk unauthorized
-            abort(403, "You can't edit this blog post");
-        }
+        // User yang bukan owner dari postingan tidak dapat edit
+        // if(Gate::denies('update-post', $post)){
+        //     // Abort akan redirect ke error page
+        //     // 403 adalah code untuk unauthorized
+        //     abort(403, "You can't edit this blog post");
+        // }
+
+        // Cara lain gunakan Gate adalah dengan menggunakan authorize
+        // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
+        $this->authorize('update-post', $post);
 
         return view('posts.edit', ['post' => $post]);
     }
@@ -145,11 +150,15 @@ class PostsController extends Controller
         $post = BlogPost::findOrFail($id);
 
         // Verify apakah user dapat mengedit data posting
-        if(Gate::denies('update-post', $post)){
-            // Abort akan redirect ke error page
-            // 403 adalah code untuk unauthorized
-            abort(403, "You can't edit this blog post");
-        }
+        // if(Gate::denies('update-post', $post)){
+        //     // Abort akan redirect ke error page
+        //     // 403 adalah code untuk unauthorized
+        //     abort(403, "You can't edit this blog post");
+        // }
+
+        // Cara lain gunakan Gate adalah dengan menggunakan authorize
+        // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
+        $this->authorize('update-post', $post);
 
         // Validating
         $validated = $request->validated();
@@ -178,7 +187,19 @@ class PostsController extends Controller
         // Dump data, making sure data is correct
         // dd($id);
 
+        // get blog post data
         $post = BlogPost::findOrFail($id);
+
+        // Check auth with gate
+        // Menolak user dengan id yang tidak sama untuk mendelete post
+        // if(Gate::denies('delete-post', $post)){
+        //     abort(403, "You can't delete this blog post!");
+        // }
+
+        // Cara lain gunakan Gate adalah dengan menggunakan authorize
+        // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan delete
+        $this->authorize('delete-post', $post);
+
         $post->delete(); // Delete data
 
         session()->flash('status', 'Blog post was deleted!');
