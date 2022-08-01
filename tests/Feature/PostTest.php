@@ -157,7 +157,9 @@ class PostTest extends TestCase
         $this->assertEquals(session('status'), 'Blog post was deleted!');
 
         // Mengecek apakah data lama sudah menghilang.
-        $this->assertDatabaseMissing('blog_posts', $post->getAttributes());
+        // $this->assertDatabaseMissing('blog_posts', $post->getAttributes());
+
+        $this->assertSoftDeleted('blog_posts', $post->getAttributes());
 
     }
 
