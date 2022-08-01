@@ -6,12 +6,15 @@ use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class PostsController extends Controller
 {
 
     public function __construct()
     {
+
+        // Melindungi pages yang dimasukkan dibawah untuk tidak dapat diakses dengan user yang tidak ter login.
         $this->middleware('auth')
             ->only(['create', 'store', 'edit', 'update', 'destroy']);
     }
@@ -115,7 +118,17 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        return view('posts.edit', ['post' => BlogPost::findOrFail($id)]);
+        // Mendapatkan data blogpost
+        $post = BlogPost::findOrFail($id);
+
+        // Verify apakah user dapat mengedit data posting
+        if(Gate::denies('update-post', $post)){
+            // Abort akan redirect ke error page
+            // 403 adalah code untuk unauthorized
+            abort(403, "You can't edit this blog post");
+        }
+
+        return view('posts.edit', ['post' => $post]);
     }
 
     /**
@@ -127,8 +140,16 @@ class PostsController extends Controller
      */
     public function update(StorePost $request, $id)
     {
+
         // Get the post, check if exists
         $post = BlogPost::findOrFail($id);
+
+        // Verify apakah user dapat mengedit data posting
+        if(Gate::denies('update-post', $post)){
+            // Abort akan redirect ke error page
+            // 403 adalah code untuk unauthorized
+            abort(403, "You can't edit this blog post");
+        }
 
         // Validating
         $validated = $request->validated();

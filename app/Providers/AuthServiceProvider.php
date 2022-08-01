@@ -25,6 +25,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // Using Gate
+        // Gate dapat mendefine untuk beberapa peraturan.
+        Gate::define('update-post', function($user, $post){
+            // Mengecek apakah user dapat mengedit post
+            return $user->id == $post->user_id;
+        });
     }
 }

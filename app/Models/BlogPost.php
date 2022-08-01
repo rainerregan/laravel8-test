@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 /*
  |==================================================================
@@ -29,6 +30,10 @@ class BlogPost extends Model
     // Satu blog post bisa memiliki banyak comments
     public function comments(){
         return $this->hasMany('App\Models\Comment');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 
     // Events
