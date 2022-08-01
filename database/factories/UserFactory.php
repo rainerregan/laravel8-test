@@ -30,4 +30,16 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+
+    /**
+     * State JohnDoe
+     *
+     * Membuat suatu akun dengan default value sebagai John Doe
+     */
+    public function johnDoe(){
+        return $this->state([
+            'name' => "John Doe",
+            'email' => "john@laravel.test",
+        ]);
+    }
 }
