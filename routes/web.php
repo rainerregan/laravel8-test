@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostsController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -112,21 +113,25 @@ Route::prefix('/fun')->name('fun.')->group(function () use($posts) {
     })->name('download');
 });
 
+// Single Action Controller
+// Route::get('/single', AboutController::class);
 
 // Middleware
 // Contoh menggunakan middleware auth adalah dibawah
-Route::get('/recent-posts/{days_ago?}', function ($days_ago = 20) {
-    return "Posts from " . $days_ago . " days ago";
-})->name('posts.recent.index')->middleware('auth');
+// Route::get('/recent-posts/{days_ago?}', function ($days_ago = 20) {
+//     return "Posts from " . $days_ago . " days ago";
+// })->name('posts.recent.index')->middleware('auth');
+
 
 
 // Contoh menggunakan controller
 Route::get('/', [HomeController::class, 'home'])->name('home.index');
 Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
 
-// Single Action Controller
-Route::get('/single', AboutController::class);
-
 // Resource Controller
 Route::resource('posts', PostsController::class); // Using all controller method
     // ->only(['index', 'show', 'create', 'store', 'edit', 'update']);
+
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
