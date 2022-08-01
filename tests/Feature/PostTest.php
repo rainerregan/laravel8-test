@@ -17,7 +17,7 @@ use App\Models\Comment;
  | Jadi semua yang kita lakukan di testing, seperti write, update, dan delete data
  | tidak akan berpengaruh kepada database real kita, melainkan hanya terjadi di
  | database temporary yang dibuat di memory.
- |
+ |-------------------------------------------------------------------------------------------
  */
 class PostTest extends TestCase
 {
@@ -25,7 +25,10 @@ class PostTest extends TestCase
 
     public function testNoBlogPostWhenNothingInDatabase()
     {
+        // Membuka halaman /posts
         $response = $this->get('/posts');
+
+        // Mengecek untuk melihat apakah ada tulisan seperti dibawah
         $response->assertSeeText('No posts found!');
     }
 
@@ -34,12 +37,12 @@ class PostTest extends TestCase
         // Arrange: Membuat dummy database model
         $post = $this->createDummyBlogPost();
 
-        // Act
+        // Act: Membuka halaman posts
         $response = $this->get('/posts');
 
         // Assert
-        $response->assertSeeText($post->title);
-        $response->assertSeeText('No comments yet');
+        $response->assertSeeText($post->title); // Melihat apakah ada post dengan title
+        $response->assertSeeText('No comments yet'); // Melihat apakah ada tulisan
 
         // Mengecek apakah database punya data yang disimpan
         $this->assertDatabaseHas('blog_posts', $post->getAttributes());
@@ -60,13 +63,18 @@ class PostTest extends TestCase
     }
 
     public function testStoreValid(){
+
         $params = [
             'title' => 'Valid title',
             'content' => 'At least 10 characters'
         ];
 
+        // Fungsi ini membuat seolah olah kita terlogin.
+        $this->actingAs($this->user());
+
         // Simulate POST request
-        $this->post('/posts', $params)
+        $this
+            ->post('/posts', $params)
             ->assertStatus(302) // Mengecek status redirect
             ->assertSessionHas('status'); // Mengecek apakah message status ada di session
 
@@ -79,6 +87,9 @@ class PostTest extends TestCase
             'title' => 'x',
             'content' => 'x'
         ];
+
+        // Fungsi ini membuat seolah olah kita terlogin.
+        $this->actingAs($this->user());
 
         // Simulate POST request
         $this->post('/posts', $params)
@@ -106,6 +117,9 @@ class PostTest extends TestCase
             'content' => 'Content of the blog post update'
         ];
 
+        // Fungsi ini membuat seolah olah kita terlogin.
+        $this->actingAs($this->user());
+
         // Simulasi edit data. Mengecek apakah ada redirect? dan apakah ada variable status pada session?
         $this->put("/posts/{$post->id}", $params)
             ->assertStatus(302)
@@ -130,6 +144,9 @@ class PostTest extends TestCase
 
         // Mengecek apakah database memiliki data tersebut
         $this->assertDatabaseHas('blog_posts', $post->getAttributes());
+
+        // Fungsi ini membuat seolah olah kita terlogin.
+        $this->actingAs($this->user());
 
         // Simulasi delete data. Mengecek apakah ada redirect? dan apakah ada variable status pada session?
         $this->delete("/posts/{$post->id}")

@@ -33,19 +33,19 @@ use Illuminate\Support\Facades\Route;
 //     return "Posts from " . $days_ago . " days ago";
 // });
 
-$posts = [
-    1 => [
-        'title' => 'Intro to Laravel',
-        'content' => 'This is a short intro to Laravel',
-        'is_new' => true,
-        'has_comments' => true
-    ],
-    2 => [
-        'title' => 'Intro to PHP',
-        'content' => 'This is a short intro to PHP',
-        'is_new' => false
-    ]
-];
+// $posts = [
+//     1 => [
+//         'title' => 'Intro to Laravel',
+//         'content' => 'This is a short intro to Laravel',
+//         'is_new' => true,
+//         'has_comments' => true
+//     ],
+//     2 => [
+//         'title' => 'Intro to PHP',
+//         'content' => 'This is a short intro to PHP',
+//         'is_new' => false
+//     ]
+// ];
 
 // Route Parameter Constraint
 // Route::get('/posts/{id}', function ($id) use ($posts) {
@@ -74,44 +74,44 @@ $posts = [
 
 
 // Route Grouping
-Route::prefix('/fun')->name('fun.')->group(function () use($posts) {
-    // Creating API responses
-    Route::get('responses', function () use ($posts) {
-        return response($posts, 201)
-            ->header('Content-Type', 'application/json')
-            ->cookie('MY_COOKIE', 'Rainer Regan', 3600);
-    })->name('responses');
+// Route::prefix('/fun')->name('fun.')->group(function () use($posts) {
+//     // Creating API responses
+//     Route::get('responses', function () use ($posts) {
+//         return response($posts, 201)
+//             ->header('Content-Type', 'application/json')
+//             ->cookie('MY_COOKIE', 'Rainer Regan', 3600);
+//     })->name('responses');
 
-    // Redirect Page
-    Route::get('redirect', function () {
-        return redirect('/contact');
-    })->name('redirect');
+//     // Redirect Page
+//     Route::get('redirect', function () {
+//         return redirect('/contact');
+//     })->name('redirect');
 
-    // Redirect to back
-    Route::get('back', function () {
-        return back();
-    })->name('back');
+//     // Redirect to back
+//     Route::get('back', function () {
+//         return back();
+//     })->name('back');
 
-    // Redirect to named route
-    Route::get('named-route', function () {
-        return redirect()->route('posts.show', ['id' => 1]);
-    })->name('named-route');
+//     // Redirect to named route
+//     Route::get('named-route', function () {
+//         return redirect()->route('posts.show', ['id' => 1]);
+//     })->name('named-route');
 
-    // Redirect to another website
-    Route::get('away', function () {
-        return redirect()->away('https://google.com');
-    })->name('away');
+//     // Redirect to another website
+//     Route::get('away', function () {
+//         return redirect()->away('https://google.com');
+//     })->name('away');
 
-    // Return JSON
-    Route::get('json', function () use ($posts) {
-        return response()->json($posts);
-    })->name('json');
+//     // Return JSON
+//     Route::get('json', function () use ($posts) {
+//         return response()->json($posts);
+//     })->name('json');
 
-    // Return Downloadable File
-    Route::get('download', function () use ($posts) {
-        return response()->download(public_path('/laravel.jpg'), 'abc.jpg');
-    })->name('download');
-});
+//     // Return Downloadable File
+//     Route::get('download', function () use ($posts) {
+//         return response()->download(public_path('/laravel.jpg'), 'abc.jpg');
+//     })->name('download');
+// });
 
 // Single Action Controller
 // Route::get('/single', AboutController::class);
@@ -125,7 +125,10 @@ Route::prefix('/fun')->name('fun.')->group(function () use($posts) {
 
 
 // Contoh menggunakan controller
-Route::get('/', [HomeController::class, 'home'])->name('home.index');
+Route::get('/', [HomeController::class, 'home'])
+    ->name('home.index');
+    // ->middleware('auth'); // Requesting Auth to access
+
 Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
 
 // Resource Controller
