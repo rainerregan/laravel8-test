@@ -46,8 +46,9 @@ class PostsController extends Controller
         return view(
             'posts.index',
             [
-                'posts' => BlogPost::withCount('comments')
-                ->get()
+                'posts' => BlogPost::latest() // Menggunakan local query method untuk mengambil latest. Function dipanggil dari nama belakang method scope. contoh: scopeLatest -> latest().
+                    ->withCount('comments')
+                    ->get()
             ]
         ); // Menampilkan semua data
     }
@@ -110,6 +111,14 @@ class PostsController extends Controller
     {
         // Menampilkan halaman show
         // abort_if(!isset($this->posts[$id]), 404);
+        // return view(
+        //     'posts.show',
+        //     [
+        //         'post' => BlogPost::with(['comments' => function($query) {
+        //             return $query->latest();
+        //         }])->findOrFail($id)
+        //     ]
+        // );
         return view(
             'posts.show',
             [

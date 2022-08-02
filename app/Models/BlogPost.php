@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Scopes\LatestScope;
+use Illuminate\Database\Eloquent\Builder;
 
 /*
  |==================================================================
@@ -30,11 +31,19 @@ class BlogPost extends Model
     // One-to-Many relationship eloquent model di Laravel
     // Satu blog post bisa memiliki banyak comments
     public function comments(){
-        return $this->hasMany('App\Models\Comment');
+        // Local query scope
+        return $this->hasMany('App\Models\Comment')->latest();
     }
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    // Local Query Scope
+    // Local query scope menggantikan global query scope yang memiliki issues
+    public function scopeLatest(Builder $query)
+    {
+        return $query->orderBy(static::CREATED_AT, 'desc');
     }
 
     // Events
