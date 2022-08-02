@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostsController;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -129,12 +130,23 @@ Route::get('/', [HomeController::class, 'home'])
     ->name('home.index');
     // ->middleware('auth'); // Requesting Auth to access
 
-Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
+Route::get('/contact', [HomeController::class, 'contact'])
+    ->name('home.contact');
 
 // Resource Controller
 Route::resource('posts', PostsController::class); // Using all controller method
     // ->only(['index', 'show', 'create', 'store', 'edit', 'update']);
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+/**
+ * Menggunakan gate 'home.secret' yang telah dibuat di AuthServiceProvider
+ * untuk allow hanya admin pada page ini.
+ *
+ * @see AuthServiceProvider
+ */
+Route::get('/secret', [HomeController::class, 'secret'])
+    ->name('secret')
+    ->middleware('can:home.secret'); // Menggunakan can middleware untuk menggunakan gate
 

@@ -28,6 +28,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Gate::define('home.secret', function($user) {
+            return $user->is_admin;
+        });
+
+
         // Using Gate
         // Gate dapat mendefine untuk beberapa peraturan.
         // Gate::define('update-post', function($user, $post){
