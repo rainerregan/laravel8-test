@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use App\Scopes\LatestScope;
 
 /*
  |==================================================================
@@ -41,6 +42,11 @@ class BlogPost extends Model
     // deleting, updating, dll.
     public static function boot(){
         parent::boot();
+
+        // Menggunakan Global Query scope untuk mempermudah
+        // Query secara global.
+        // Global scope menambahkan query yang telah dibuat di scope.
+        static::addGlobalScope(new LatestScope);
 
         // Fungsi ini akan dijalankan ketika suatu data di delete.
         // Dilajankan ketika suatu blog post di delete.

@@ -46,7 +46,8 @@ class PostsController extends Controller
         return view(
             'posts.index',
             [
-                'posts' => BlogPost::withCount('comments')->get()
+                'posts' => BlogPost::withCount('comments')
+                ->get()
             ]
         ); // Menampilkan semua data
     }
