@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
+use App\Policies\BlogPostPolicy;
+use App\Providers\AuthServiceProvider;
 use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -56,6 +58,9 @@ class PostsController extends Controller
      */
     public function create()
     {
+        // Melakukan pengecekan untuk policy create
+        $this->authorize('posts.create');
+
         // Menampilkan form create post
         return view('posts.create');
     }
@@ -131,7 +136,15 @@ class PostsController extends Controller
 
         // Cara lain gunakan Gate adalah dengan menggunakan authorize
         // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
-        $this->authorize('update-post', $post);
+        // $this->authorize('posts.update', $post);
+
+        /**
+         * Ketika kita sudah menggunakan policies mapping pada AuthServiceProvider, kita dapat menggunakan nama langsung dan tidak panjang
+         * @see AuthServiceProvider
+         * @see BlogPostPolicy
+         */
+        $this->authorize('update', $post);
+        #$this->authorize($post); // Cara Lain
 
         return view('posts.edit', ['post' => $post]);
     }
@@ -158,7 +171,15 @@ class PostsController extends Controller
 
         // Cara lain gunakan Gate adalah dengan menggunakan authorize
         // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
-        $this->authorize('update-post', $post);
+        // $this->authorize('posts.update', $post);
+
+        /**
+         * Ketika kita sudah menggunakan policies mapping pada AuthServiceProvider, kita dapat menggunakan nama langsung dan tidak panjang
+         * @see AuthServiceProvider
+         * @see BlogPostPolicy
+         */
+        $this->authorize('update', $post);
+        # $this->authorize($post); // Cara Lain
 
         // Validating
         $validated = $request->validated();
@@ -198,7 +219,15 @@ class PostsController extends Controller
 
         // Cara lain gunakan Gate adalah dengan menggunakan authorize
         // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan delete
-        $this->authorize('delete-post', $post);
+        // $this->authorize('posts.delete', $post);
+
+        /**
+         * Ketika kita sudah menggunakan policies mapping pada AuthServiceProvider, kita dapat menggunakan nama langsung dan tidak panjang
+         * @see AuthServiceProvider
+         * @see BlogPostPolicy
+         */
+        $this->authorize('delete', $post);
+        # $this->authorize($post); // Cara Lain
 
         $post->delete(); // Delete data
 
