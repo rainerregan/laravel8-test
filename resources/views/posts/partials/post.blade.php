@@ -1,13 +1,19 @@
 {{-- Bagian dari HTML ini berfungsi untuk me-loop post dan menampilkan di index page --}}
 {{-- Title --}}
 <h3>
-    <a href="{{ route('posts.show', ['post' => $post->id]) }}">
-        {{$post->title}}
+    @if ($post->trashed())
+        <del>
+    @endif
+    <a class="{{ $post->trashed() ? 'text-muted' : '' }}" href="{{ route('posts.show', ['post' => $post->id]) }}">
+        {{ $post->title }}
     </a>
+    @if ($post->trashed())
+        </del>
+    @endif
 </h3>
 
 {{-- Timestamp --}}
-<p class="text-muted">Added {{$post->created_at->diffForHumans()}}
+<p class="text-muted">Added {{ $post->created_at->diffForHumans() }}
     by {{ $post->user->name }}
 </p>
 
@@ -32,15 +38,17 @@
         <p>You can't delete this post</p>
     @endcannot --}}
 
-    {{-- Display tombol delete jika dapat delete --}}
-    @can('delete', $post)
-        {{-- Tombol Delete --}}
-        {{-- Simulate DELETE HTTP request by using form --}}
-        <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
-            @csrf
-            @method('DELETE')
+    @if (!$post->trashed())
+        {{-- Display tombol delete jika dapat delete --}}
+        @can('delete', $post)
+            {{-- Tombol Delete --}}
+            {{-- Simulate DELETE HTTP request by using form --}}
+            <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
+                @csrf
+                @method('DELETE')
 
-            <input type="submit" value="Delete!" class="btn btn-primary">
-        </form>
-    @endcan
+                <input type="submit" value="Delete!" class="btn btn-primary">
+            </form>
+        @endcan
+    @endif
 </div>

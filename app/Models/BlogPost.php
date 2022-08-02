@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use App\Scopes\DeletedAdminScope;
 use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -58,6 +59,10 @@ class BlogPost extends Model
     // Events adalah method yang dipanggil ketika suatu event terjadi seperti
     // deleting, updating, dll.
     public static function boot(){
+        // Give admin to see all deleted posts
+        static::addGlobalScope(new DeletedAdminScope);
+
+
         parent::boot();
 
         // Menggunakan Global Query scope untuk mempermudah
@@ -87,5 +92,6 @@ class BlogPost extends Model
         static::restoring(function(BlogPost $blogPost){
             $blogPost->comments()->restore();
         });
+
     }
 }
