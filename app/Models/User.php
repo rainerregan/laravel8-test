@@ -43,7 +43,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function blogPosts(){
+    public function blogPosts()
+    {
         return $this->hasMany(BlogPost::class);
     }
 
@@ -51,5 +52,18 @@ class User extends Authenticatable
     {
         // Akan menambahkan colum dengan nama blog_posts_count
         return $query->withCount('blogPosts')->orderBy('blog_posts_count', 'desc');
+    }
+
+    public function scopeWithMostBlogPostsLastMonth(Builder $query)
+    {
+        return $query->withCount(
+            [
+                'blogPosts' => function (Builder $query) {
+                    $query->whereBetween(static::CREATED_AT, [now()->subMonths(3), now()]);
+                }
+            ]
+        )
+        ->having('blog_posts_count', '>=', 2)
+        ->orderby('blog_posts_count', 'desc');
     }
 }
