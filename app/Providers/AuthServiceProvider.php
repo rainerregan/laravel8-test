@@ -49,8 +49,9 @@ class AuthServiceProvider extends ServiceProvider
         // Jika return adalah selain true, maka Laravel akan menggunakan define diatas untuk mengecek status.
         // Parameter user adalah parameter yang di provide oleh laravel
         // Parameter ability adalah action yang akan kita cek, seperti 'update-post'
+        # Gate dibawah berfungsi untuk memberikan ability bagi admin
         // Gate::before(function ($user, $ability){
-        //     if ($user->is_admin && in_array($ability, ['posts.update'])) {
+        //     if ($user->is_admin && in_array($ability, ['update', 'delete'])) {
         //         return true; // Return true, jika user merupakan admin.
         //     }
         // });

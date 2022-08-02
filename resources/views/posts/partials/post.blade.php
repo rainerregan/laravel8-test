@@ -19,16 +19,28 @@
 @endif
 
 <div class="mb-3">
-    {{-- Tombol Edit --}}
-    <a href="{{ route('posts.edit', ['post' => $post->id]) }}" class="btn btn-primary">
-        Edit
-    </a>
 
-    {{-- Tombol Delete --}}
-    <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
-        @csrf
-        @method('DELETE')
+    {{-- Display tombol edit jika bisa update --}}
+    @can('update', $post)
+        {{-- Tombol Edit --}}
+        <a href="{{ route('posts.edit', ['post' => $post->id]) }}" class="btn btn-primary">
+            Edit
+        </a>
+    @endcan
 
-        <input type="submit" value="Delete!" class="btn btn-primary">
-    </form>
+    {{-- @cannot('delete', $post)
+        <p>You can't delete this post</p>
+    @endcannot --}}
+
+    {{-- Display tombol delete jika dapat delete --}}
+    @can('delete', $post)
+        {{-- Tombol Delete --}}
+        {{-- Simulate DELETE HTTP request by using form --}}
+        <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
+            @csrf
+            @method('DELETE')
+
+            <input type="submit" value="Delete!" class="btn btn-primary">
+        </form>
+    @endcan
 </div>
