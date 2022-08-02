@@ -106,8 +106,12 @@ class PostTest extends TestCase
 
     public function testUpdateValid(){
 
+        // Create Dummy user
+        $user = $this->user();
+
         // Dummy new model
-        $post = $this->createDummyBlogPost();
+        // Menggunakan parameter id user diatas karena mensimulasikan kalau itu adalah owner dari post
+        $post = $this->createDummyBlogPost($user->id);
 
         // Mengecek apakah database memiliki data tersebut
         $this->assertDatabaseHas('blog_posts', $post->getAttributes());
@@ -118,7 +122,7 @@ class PostTest extends TestCase
         ];
 
         // Fungsi ini membuat seolah olah kita terlogin.
-        $this->actingAs($this->user());
+        $this->actingAs($user);
 
         // Simulasi edit data. Mengecek apakah ada redirect? dan apakah ada variable status pada session?
         $this->put("/posts/{$post->id}", $params)
@@ -139,8 +143,12 @@ class PostTest extends TestCase
 
     public function testDelete(){
 
+        // Create Dummy user
+        $user = $this->user();
+
         // Membuat dummy model
-        $post = $this->createDummyBlogPost();
+        // Menggunakan parameter id user diatas karena mensimulasikan kalau itu adalah owner dari post
+        $post = $this->createDummyBlogPost($user->id);
 
         // Mengecek apakah database memiliki data tersebut
         $this->assertDatabaseHas('blog_posts', $post->getAttributes());
@@ -163,7 +171,7 @@ class PostTest extends TestCase
 
     }
 
-    private function createDummyBlogPost(): BlogPost{
+    private function createDummyBlogPost($userId = null): BlogPost{
         // $post = new BlogPost();
         // $post->title = 'New title';
         // $post->content = 'Content of the blog post';
@@ -171,7 +179,11 @@ class PostTest extends TestCase
         // return $post;
 
         // Using model factory
-        return BlogPost::factory()->newTitle()->create();
+        return BlogPost::factory()->newTitle()->create(
+            [
+                'user_id' => $userId ?? $this->user()->id,
+            ]
+        );
 
     }
 }
