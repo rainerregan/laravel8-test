@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
+use App\Models\User;
 use App\Policies\BlogPostPolicy;
 use App\Providers\AuthServiceProvider;
 use Illuminate\Http\Request;
@@ -49,7 +50,8 @@ class PostsController extends Controller
                 'posts' => BlogPost::latest() // Menggunakan local query method untuk mengambil latest. Function dipanggil dari nama belakang method scope. contoh: scopeLatest -> latest().
                     ->withCount('comments')
                     ->get(),
-                'mostCommented' => BlogPost::mostCommented()->take(5)->get()
+                'mostCommented' => BlogPost::mostCommented()->take(5)->get(),
+                'mostActive' => User::withMostBlogPosts()->take(5)->get()
             ]
         ); // Menampilkan semua data
     }
