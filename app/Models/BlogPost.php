@@ -46,7 +46,7 @@ class BlogPost extends Model
         // Menggunakan Global Query scope untuk mempermudah
         // Query secara global.
         // Global scope menambahkan query yang telah dibuat di scope.
-        static::addGlobalScope(new LatestScope);
+        // static::addGlobalScope(new LatestScope);
 
         // Fungsi ini akan dijalankan ketika suatu data di delete.
         // Dilajankan ketika suatu blog post di delete.
