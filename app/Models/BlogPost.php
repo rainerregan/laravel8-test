@@ -24,7 +24,7 @@ class BlogPost extends Model
 
     // Fillable berfungsi untuk menentukan field apa saja yang boleh untuk
     // dimodifikasi melalui mass assignment.
-    protected $fillable = ['title', 'content'];
+    protected $fillable = ['title', 'content', 'user_id'];
 
     // One-to-Many relationship eloquent model di Laravel
     // Satu blog post bisa memiliki banyak comments

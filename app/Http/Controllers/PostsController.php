@@ -59,7 +59,7 @@ class PostsController extends Controller
     public function create()
     {
         // Melakukan pengecekan untuk policy create
-        $this->authorize('posts.create');
+        // $this->authorize('create');
 
         // Menampilkan form create post
         return view('posts.create');
@@ -78,6 +78,8 @@ class PostsController extends Controller
 
         // Validation Menggunakan Custom Request Class
         $validated = $request->validated();
+
+        $validated['user_id'] = $request->user()->id; // define user ID
 
         // Instantiate Model
         // $new_post = new BlogPost();
