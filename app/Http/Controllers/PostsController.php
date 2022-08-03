@@ -5,18 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use App\Models\User;
-use App\Policies\BlogPostPolicy;
-use App\Providers\AuthServiceProvider;
-use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
 
 class PostsController extends Controller
 {
 
     public function __construct()
     {
-
         // Melindungi pages yang dimasukkan dibawah untuk tidak dapat diakses dengan user yang tidak ter login.
         $this->middleware('auth')
             ->only(['create', 'store', 'edit', 'update', 'destroy']);
@@ -29,19 +24,20 @@ class PostsController extends Controller
      */
     public function index()
     {
-        // Enable Query Logging
-        // DB::enableQueryLog();
+        // Caching
+        // Fungsi dibawah adalah untuk mendapatkan data dari cache dalam waktu tertentu
+        // Jika tidak ada, maka kita akan membuat data tersebut di cache
+        $mostCommented = Cache::remember('mostCommented', now()->addSeconds(10), function(){
+            return BlogPost::mostCommented()->take(5)->get();
+        });
 
-        // $posts = BlogPost::with('comments');
+        $mostActive = Cache::remember('mostActive', now()->addSeconds(10), function(){
+            return User::withMostBlogPosts()->take(5)->get();
+        });
 
-        // foreach($posts as $post){
-        //     foreach($post->comments as $comment){
-        //         echo $comment->content;
-        //     }
-        // }
-
-        // dd(DB::getQueryLog());
-
+        $mostActiveLastMonth = Cache::remember('mostActiveLastMonth', now()->addSeconds(10), function(){
+            return User::withMostBlogPostsLastMonth()->take(5)->get();
+        });
 
         // Menampilkan halaman index
         return view(
@@ -51,9 +47,9 @@ class PostsController extends Controller
                     ->withCount('comments')
                     ->with('user')
                     ->get(),
-                'mostCommented' => BlogPost::mostCommented()->take(5)->get(),
-                'mostActive' => User::withMostBlogPosts()->take(5)->get(),
-                'mostActiveLastMonth' => User::withMostBlogPostsLastMonth()->take(5)->get()
+                'mostCommented' => $mostCommented, // Menggunakan Caching
+                'mostActive' => $mostActive,
+                'mostActiveLastMonth' => $mostActiveLastMonth
             ]
         ); // Menampilkan semua data
     }
@@ -65,9 +61,6 @@ class PostsController extends Controller
      */
     public function create()
     {
-        // Melakukan pengecekan untuk policy create
-        // $this->authorize('create');
-
         // Menampilkan form create post
         return view('posts.create');
     }
@@ -115,15 +108,6 @@ class PostsController extends Controller
     public function show($id)
     {
         // Menampilkan halaman show
-        // abort_if(!isset($this->posts[$id]), 404);
-        // return view(
-        //     'posts.show',
-        //     [
-        //         'post' => BlogPost::with(['comments' => function($query) {
-        //             return $query->latest();
-        //         }])->findOrFail($id)
-        //     ]
-        // );
         return view(
             'posts.show',
             [
