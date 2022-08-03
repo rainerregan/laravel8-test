@@ -14,9 +14,9 @@ class PostTagController extends Controller
 
         return view('posts.index', [
             'posts' => $tag->blogPosts, // Mendapatkan list posts yang berhubungan
-            'mostCommented' => [],
-            'mostActive' => [],
-            'mostActiveLastMonth' => []
+            // 'mostCommented' => [],
+            // 'mostActive' => [],
+            // 'mostActiveLastMonth' => []
         ]);
     }
 }

@@ -27,17 +27,17 @@ class PostsController extends Controller
         // Caching
         // Fungsi dibawah adalah untuk mendapatkan data dari cache dalam waktu tertentu
         // Jika tidak ada, maka kita akan membuat data tersebut di cache
-        $mostCommented = Cache::tags(['blog-post'])->remember('blog-post-commented', now()->addSeconds(10), function(){
-            return BlogPost::mostCommented()->take(5)->get();
-        });
+        // $mostCommented = Cache::tags(['blog-post'])->remember('blog-post-commented', now()->addSeconds(10), function(){
+        //     return BlogPost::mostCommented()->take(5)->get();
+        // });
 
-        $mostActive = Cache::remember('users-most-active', now()->addSeconds(10), function(){
-            return User::withMostBlogPosts()->take(5)->get();
-        });
+        // $mostActive = Cache::remember('users-most-active', now()->addSeconds(10), function(){
+        //     return User::withMostBlogPosts()->take(5)->get();
+        // });
 
-        $mostActiveLastMonth = Cache::remember('users-most-active-last-month', now()->addSeconds(10), function(){
-            return User::withMostBlogPostsLastMonth()->take(5)->get();
-        });
+        // $mostActiveLastMonth = Cache::remember('users-most-active-last-month', now()->addSeconds(10), function(){
+        //     return User::withMostBlogPostsLastMonth()->take(5)->get();
+        // });
 
         // Menampilkan halaman index
         return view(
@@ -48,9 +48,9 @@ class PostsController extends Controller
                     ->with('user')
                     ->with('tags')
                     ->get(),
-                'mostCommented' => $mostCommented, // Menggunakan Caching
-                'mostActive' => $mostActive,
-                'mostActiveLastMonth' => $mostActiveLastMonth,
+                // 'mostCommented' => $mostCommented, // Menggunakan Caching
+                // 'mostActive' => $mostActive,
+                // 'mostActiveLastMonth' => $mostActiveLastMonth,
             ]
         ); // Menampilkan semua data
     }
