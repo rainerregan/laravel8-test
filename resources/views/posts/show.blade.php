@@ -19,6 +19,8 @@
 
             <p>{{ $post->content }}</p>
 
+            <img src="{{ $post->image->url() }}" alt="" srcset="">
+
             {{-- Created Timestamp Component --}}
             <x-updated :date="$post->created_at" :name="$post->user->name"></x-updated>
 
