@@ -8,7 +8,7 @@
 
         {{-- Nama components sudah di buat alias di AppServiceProvider, sehingga kita tidak perlu untuk memberikan parameter nama --}}
         {{-- Update Laravel 8: Kita tidak perlu untuk membuat alias, tapi dengan menggunakan x-namaComponent sudah bisa --}}
-        <x-badge type="info" show="{{ now()->diffInMinutes($post->created_at) < 30 }}">
+        <x-badge type="info" :show="now()->diffInMinutes($post->created_at) < 30">
             Brand new post!
         </x-badge>
     </h1>
