@@ -18,14 +18,4 @@
     @enderror --}}
 </div>
 
-{{-- Check Errors --}}
-@if ($errors->any())
-    <div class="mb-3">
-        <ul class="list-group">
-            {{-- Loop through errors, and display it --}}
-            @foreach ($errors->all() as $error)
-                <li class="list-group-item list-group-item-danger">{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+<x-errors :errors="$errors"></x-errors>

@@ -34,6 +34,8 @@
 
             <h4>Comments</h4>
 
+            @include('comments.partials.form')
+
             @forelse ($post->comments as $comment)
                 <p>
                     {{ $comment->content }},

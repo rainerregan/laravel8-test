@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Cache;
  | Di dalam model, kita bisa menentukan relationships dan lainnya.
  |==================================================================
  */
+
 class BlogPost extends Model
 {
     use HasFactory;
@@ -33,12 +34,14 @@ class BlogPost extends Model
 
     // One-to-Many relationship eloquent model di Laravel
     // Satu blog post bisa memiliki banyak comments
-    public function comments(){
+    public function comments()
+    {
         // Local query scope
         return $this->hasMany('App\Models\Comment')->latest();
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
@@ -60,7 +63,8 @@ class BlogPost extends Model
     // Events
     // Events adalah method yang dipanggil ketika suatu event terjadi seperti
     // deleting, updating, dll.
-    public static function boot(){
+    public static function boot()
+    {
         // Give admin to see all deleted posts
         static::addGlobalScope(new DeletedAdminScope);
 
@@ -79,23 +83,23 @@ class BlogPost extends Model
         // Update: Events sudah digantikan dengan fitur SQL CASCADE langsung di database.
 
         // Update: Dengan menambahkan softdelete, fitur dibawah ini tidak akan mendelete secara permanent lagi.
-        static::deleting(function(BlogPost $blogPost){
-                // Ketika blogpost di delete, maka fungsi ini akan men-delete semua data comments yang berhubungan dengan
-                // blog post tersebut.
-                $blogPost->comments()->delete();
-            });
+        static::deleting(function (BlogPost $blogPost) {
+            // Ketika blogpost di delete, maka fungsi ini akan men-delete semua data comments yang berhubungan dengan
+            // blog post tersebut.
+            $blogPost->comments()->delete();
+            Cache::tags(['blog-post'])->forget("blog-post-{$blogPost->id}");
+        });
 
         // Subscribing ke event restoring untuk restore data.
-        static::restoring(function(BlogPost $blogPost){
+        static::restoring(function (BlogPost $blogPost) {
             $blogPost->comments()->restore();
         });
 
         // Event untuk updating
         static::updating(function (BlogPost $blogPost) {
             // Menghapus cache untuk post ketika post dilakukan update
-            Cache::forget("blog-post-{$blogPost->id}");
+            Cache::tags(['blog-post'])->forget("blog-post-{$blogPost->id}");
         });
-
     }
 
     public function tags()
