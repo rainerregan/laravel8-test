@@ -10,7 +10,7 @@
 </div>
 <div class="form-group">
     <label for="content">Content</label>
-    <textarea class="form-control" id="content" name="content" id="content" cols="30" rows="10">{{ old('title', optional($post ?? null)->content) }}</textarea>
+    <textarea class="form-control" id="content" name="content" id="content" cols="30" rows="10">{{ old('content', optional($post ?? null)->content) }}</textarea>
 
     {{-- Display error untuk field spesifik --}}
     {{-- @error('content')
