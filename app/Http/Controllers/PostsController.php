@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
+use App\Http\ViewComposers\ActivityComposer;
 use App\Models\BlogPost;
 use App\Models\Image;
 use App\Models\User;
+use App\Providers\AppServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,23 +25,12 @@ class PostsController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @see AppServiceProvider
+     * @see ActivityComposer
+     * @see BlogPost @scopeLatestWithRelations
      */
     public function index()
     {
-        // Caching
-        // Fungsi dibawah adalah untuk mendapatkan data dari cache dalam waktu tertentu
-        // Jika tidak ada, maka kita akan membuat data tersebut di cache
-        // $mostCommented = Cache::tags(['blog-post'])->remember('blog-post-commented', now()->addSeconds(10), function(){
-        //     return BlogPost::mostCommented()->take(5)->get();
-        // });
-
-        // $mostActive = Cache::remember('users-most-active', now()->addSeconds(10), function(){
-        //     return User::withMostBlogPosts()->take(5)->get();
-        // });
-
-        // $mostActiveLastMonth = Cache::remember('users-most-active-last-month', now()->addSeconds(10), function(){
-        //     return User::withMostBlogPostsLastMonth()->take(5)->get();
-        // });
 
         // Menampilkan halaman index
         return view(
@@ -48,9 +39,6 @@ class PostsController extends Controller
                 'posts' => BlogPost::latest() // Menggunakan local query method untuk mengambil latest. Function dipanggil dari nama belakang method scope. contoh: scopeLatest -> latest().
                     ->latestWithRelations()
                     ->get(),
-                // 'mostCommented' => $mostCommented, // Menggunakan Caching
-                // 'mostActive' => $mostActive,
-                // 'mostActiveLastMonth' => $mostActiveLastMonth,
             ]
         ); // Menampilkan semua data
     }
@@ -74,9 +62,6 @@ class PostsController extends Controller
      */
     public function store(StorePost $request)
     {
-        // Dumping data
-        // dd($request);
-
         // Validation Menggunakan Custom Request Class
         $validated = $request->validated();
         $validated['user_id'] = $request->user()->id; // define user ID
@@ -85,7 +70,7 @@ class PostsController extends Controller
         $post = BlogPost::create($validated);
 
         // Handle Upload
-        if($request->hasFile('thumbnail')){
+        if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('thumbnails');
             $post->image()->save(
                 Image::create(['path' => $path])
@@ -110,7 +95,7 @@ class PostsController extends Controller
 
         // Caching: menggunakan dynamic key
         // Cache ini akan dihapus ketika post di update
-        $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function() use($id){
+        $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function () use ($id) {
             return BlogPost::with(['comments', 'tags', 'user', 'comments.user'])
                 ->findOrFail($id);
         });
@@ -126,17 +111,18 @@ class PostsController extends Controller
         $diffrence = 0;
         $now = now();
 
-        foreach($users as $session => $lastVisit)
-        {
-            if($now->diffInMinutes($lastVisit) >= 1){
+        foreach ($users as $session => $lastVisit) {
+            if ($now->diffInMinutes($lastVisit) >= 1) {
                 $diffrence--;
             } else {
                 $usersUpdate[$session] = $lastVisit;
             }
         }
 
-        if(!array_key_exists($sessionId, $users)
-            || $now->diffInMinutes($users[$sessionId]) >= 1){
+        if (
+            !array_key_exists($sessionId, $users)
+            || $now->diffInMinutes($users[$sessionId]) >= 1
+        ) {
 
             $diffrence++;
         }
@@ -145,7 +131,7 @@ class PostsController extends Controller
         Cache::tags(['blog-post'])->forever($usersKey, $usersUpdate);
 
         // Mengecek counter apakah ada di cache
-        if(!Cache::tags(['blog-post'])->has($counterKey)){
+        if (!Cache::tags(['blog-post'])->has($counterKey)) {
             Cache::tags(['blog-post'])->forever($counterKey, 1);
         } else {
             Cache::tags(['blog-post'])->increment($counterKey, $diffrence);
@@ -201,6 +187,9 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     *
+     * @see AuthServiceProvider
+     * @see BlogPostPolicy
      */
     public function update(StorePost $request, $id)
     {
@@ -233,14 +222,36 @@ class PostsController extends Controller
         // Fill object with validated
         $post->fill($validated);
 
-        // Save
+        // Handle Upload
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('thumbnails');
+
+            if($post->image){
+                // Jika sudah ada Image, Delete
+                Storage::delete($post->image->path);
+
+                // Set new path untuk post yang diedit
+                $post->image->path = $path;
+
+                // Save Image dan changes
+                $post->image->save();
+            } else {
+                // Save path ke dalam model Image didalam post
+                $post->image()->save(
+                    Image::create(['path' => $path])
+                );
+            }
+
+        }
+
+        // Save post
         $post->save();
 
         // tell user from flash message
         session()->flash('status', 'Blog post was updated');
 
+        // Redirect
         return redirect()->route('posts.show', ['post' => $post->id]);
-
     }
 
     /**

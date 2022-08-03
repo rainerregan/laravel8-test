@@ -45,6 +45,15 @@ class BlogPost extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)->withTimestamps();
+    }
+
+    public function image(){
+        return $this->hasOne(Image::class);
+    }
+
     // Local Query Scope
     // Local query scope menggantikan global query scope yang memiliki issues
     public function scopeLatest(Builder $query)
@@ -89,9 +98,9 @@ class BlogPost extends Model
 
         // Update: Dengan menambahkan softdelete, fitur dibawah ini tidak akan mendelete secara permanent lagi.
         static::deleting(function (BlogPost $blogPost) {
-            // Ketika blogpost di delete, maka fungsi ini akan men-delete semua data comments yang berhubungan dengan
-            // blog post tersebut.
+            // Ketika blogpost di delete, maka fungsi ini akan men-delete semua data comments yang berhubungan dengan blog post tersebut.
             $blogPost->comments()->delete();
+            $blogPost->image()->delete();
             Cache::tags(['blog-post'])->forget("blog-post-{$blogPost->id}");
         });
 
@@ -107,12 +116,4 @@ class BlogPost extends Model
         });
     }
 
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class)->withTimestamps();
-    }
-
-    public function image(){
-        return $this->hasOne(Image::class);
-    }
 }
