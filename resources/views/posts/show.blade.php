@@ -38,11 +38,9 @@
                 <p>
                     {{ $comment->content }},
                 </p>
-                {{-- <p class="text-muted">
-            added {{ $comment->created_at->diffForHumans() }}
-        </p> --}}
+
                 {{-- Timestamp Component --}}
-                <x-updated :date="$comment->created_at"></x-updated>
+                <x-updated :date="$comment->created_at" :name="$comment->user->name"></x-updated>
 
             @empty
                 <p>No comments yet!</p>

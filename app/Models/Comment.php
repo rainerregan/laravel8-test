@@ -32,4 +32,8 @@ class Comment extends Model
 
         // static::addGlobalScope(new LatestScope);
     }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

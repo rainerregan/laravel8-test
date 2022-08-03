@@ -66,4 +66,9 @@ class User extends Authenticatable
         ->has('blogPosts', '>=', 2)
         ->orderby('blog_posts_count', 'desc');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

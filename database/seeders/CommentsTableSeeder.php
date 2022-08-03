@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\BlogPost;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class CommentsTableSeeder extends Seeder
@@ -27,6 +28,9 @@ class CommentsTableSeeder extends Seeder
         // Mendapatkan jumlah comments yang ingin dibuat oleh user.
         $commentsCount = (int)$this->command->ask('How many comments would you like to create?', 150);
 
+        // Mendapatkan semua data users
+        $users = User::all();
+
         /*
          |========================================================================
          | Comments Seeder
@@ -40,8 +44,9 @@ class CommentsTableSeeder extends Seeder
          */
         Comment::factory($commentsCount)
             ->make() // Membuat 150 unsaved comment
-            ->each(function($comment) use($posts){ // Looping
+            ->each(function($comment) use($posts, $users){ // Looping
                 $comment->blog_post_id = $posts->random()->id;
+                $comment->user_id = $users->random()->id; // Meng-assign setiap user_id untuk setiap post dengan data user_id random dari Users yang dibuat sebelumnya.
                 $comment->save();
             });
     }
