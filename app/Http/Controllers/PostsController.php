@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
+use App\Models\Image;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
@@ -82,11 +84,12 @@ class PostsController extends Controller
         // Cara Lain Untuk buat Model
         $post = BlogPost::create($validated);
 
-        $hasFile = $request->hasFile('thumbnail');
-
-        if($hasFile){
-            $file = $request->file('thumbnail');
-            $file->store('thumbnails');
+        // Handle Upload
+        if($request->hasFile('thumbnail')){
+            $path = $request->file('thumbnail')->store('thumbnails');
+            $post->image()->save(
+                Image::create(['path' => $path])
+            );
         }
 
         // Flash message: Menampilkan message untuk 1 kali dengan menggunakan sessions
