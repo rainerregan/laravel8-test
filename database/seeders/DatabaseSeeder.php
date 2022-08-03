@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -28,6 +29,9 @@ class DatabaseSeeder extends Seeder
             $this->command->call('migrate:refresh');
             $this->command->info('Database was refreshed');
         }
+
+        // Flush cache dan reset cache untuk blog posts
+        Cache::tags(['blog-post'])->flush();
 
         // Memanggil Individual Seeders
         // Memanggil seeders harus memperhatikan urutan seeder agar foreign key
