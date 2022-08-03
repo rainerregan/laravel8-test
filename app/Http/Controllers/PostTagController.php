@@ -13,10 +13,13 @@ class PostTagController extends Controller
         $tag = Tag::findOrFail($tag);
 
         return view('posts.index', [
-            'posts' => $tag->blogPosts, // Mendapatkan list posts yang berhubungan
-            // 'mostCommented' => [],
-            // 'mostActive' => [],
-            // 'mostActiveLastMonth' => []
+            // Mendapatkan list posts yang berhubungan
+            'posts' => $tag->blogPosts()
+                ->latest()
+                ->withCount('comments')
+                ->with('user')
+                ->with('tags')
+                ->get()
         ]);
     }
 }

@@ -112,7 +112,8 @@ class PostsController extends Controller
         // Caching: menggunakan dynamic key
         // Cache ini akan dihapus ketika post di update
         $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function() use($id){
-            return BlogPost::with('comments')->with('tags')->with('user')->findOrFail($id);
+            return BlogPost::with(['comments', 'tags', 'user', 'comments.user'])
+                ->findOrFail($id);
         });
 
         // Cache for Counter
