@@ -46,10 +46,11 @@ class PostsController extends Controller
                 'posts' => BlogPost::latest() // Menggunakan local query method untuk mengambil latest. Function dipanggil dari nama belakang method scope. contoh: scopeLatest -> latest().
                     ->withCount('comments')
                     ->with('user')
+                    ->with('tags')
                     ->get(),
                 'mostCommented' => $mostCommented, // Menggunakan Caching
                 'mostActive' => $mostActive,
-                'mostActiveLastMonth' => $mostActiveLastMonth
+                'mostActiveLastMonth' => $mostActiveLastMonth,
             ]
         ); // Menampilkan semua data
     }
@@ -111,7 +112,7 @@ class PostsController extends Controller
         // Caching: menggunakan dynamic key
         // Cache ini akan dihapus ketika post di update
         $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function() use($id){
-            return BlogPost::with('comments')->findOrFail($id);
+            return BlogPost::with('comments')->with('tags')->with('user')->findOrFail($id);
         });
 
         // Cache for Counter

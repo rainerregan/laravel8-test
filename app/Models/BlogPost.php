@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use App\Models\Tag;
 use App\Scopes\DeletedAdminScope;
 use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,11 +75,6 @@ class BlogPost extends Model
         // Fungsi ini akan dijalankan ketika suatu data di delete.
         // Dilajankan ketika suatu blog post di delete.
         // Fungsi Delete ini akan mendelete secara permanent dari database.
-        // static::deleting(function(BlogPost $blogPost){
-        //     // Ketika blogpost di delete, maka fungsi ini akan men-delete semua data comments yang berhubungan dengan
-        //     // blog post tersebut.
-        //     $blogPost->comments()->delete();
-        // });
 
         // Update: Events sudah digantikan dengan fitur SQL CASCADE langsung di database.
 
@@ -100,5 +96,10 @@ class BlogPost extends Model
             Cache::forget("blog-post-{$blogPost->id}");
         });
 
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 }

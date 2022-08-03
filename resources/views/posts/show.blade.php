@@ -24,7 +24,9 @@
         Updated
     </x-updated>
 
-    <p>Currently read by {{$counter}}</p>
+    <x-tags :tags="$post->tags"></x-tags>
+
+    <p>Currently read by {{ $counter }}</p>
 
 
     <h4>Comments</h4>
