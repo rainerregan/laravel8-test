@@ -54,15 +54,20 @@ class BlogPost extends Model
 
     public function scopeMostCommented(Builder $query)
     {
-
         // withCount akan membuat column baru bernama comments_count
         // Kita dapat mengurutkan most commented post dengan ini
         return $query->withCount('comments')->orderBy('comments_count', 'desc');
     }
 
-    // Events
-    // Events adalah method yang dipanggil ketika suatu event terjadi seperti
-    // deleting, updating, dll.
+    public function scopeLatestWithRelations(Builder $query)
+    {
+        return $query->latest()
+            ->withCount('comments')
+            ->with('user')
+            ->with('tags');
+    }
+
+    // Events adalah method yang dipanggil ketika suatu event terjadi seperti deleting, updating, dll.
     public static function boot()
     {
         // Give admin to see all deleted posts

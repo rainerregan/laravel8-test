@@ -15,10 +15,7 @@ class PostTagController extends Controller
         return view('posts.index', [
             // Mendapatkan list posts yang berhubungan
             'posts' => $tag->blogPosts()
-                ->latest()
-                ->withCount('comments')
-                ->with('user')
-                ->with('tags')
+                ->latestWithRelations()
                 ->get()
         ]);
     }

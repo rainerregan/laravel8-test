@@ -44,9 +44,7 @@ class PostsController extends Controller
             'posts.index',
             [
                 'posts' => BlogPost::latest() // Menggunakan local query method untuk mengambil latest. Function dipanggil dari nama belakang method scope. contoh: scopeLatest -> latest().
-                    ->withCount('comments')
-                    ->with('user')
-                    ->with('tags')
+                    ->latestWithRelations()
                     ->get(),
                 // 'mostCommented' => $mostCommented, // Menggunakan Caching
                 // 'mostActive' => $mostActive,
