@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Scopes\DeletedAdminScope;
 use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 /*
  |==================================================================
@@ -91,6 +92,12 @@ class BlogPost extends Model
         // Subscribing ke event restoring untuk restore data.
         static::restoring(function(BlogPost $blogPost){
             $blogPost->comments()->restore();
+        });
+
+        // Event untuk updating
+        static::updating(function (BlogPost $blogPost) {
+            // Menghapus cache untuk post ketika post dilakukan update
+            Cache::forget("blog-post-{$blogPost->id}");
         });
 
     }
