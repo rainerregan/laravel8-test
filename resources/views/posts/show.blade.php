@@ -15,8 +15,14 @@
 
 
     <p>{{ $post->content }}</p>
-    <p>Added {{ $post->created_at->diffForHumans() }}</p>
 
+    {{-- Created Timestamp Component --}}
+    <x-updated :date="$post->created_at" :name="$post->user->name"></x-updated>
+
+    {{-- Updated Timestamp Component --}}
+    <x-updated :date="$post->created_at">
+        Updated
+    </x-updated>
 
 
     <h4>Comments</h4>
@@ -25,9 +31,12 @@
         <p>
             {{ $comment->content }},
         </p>
-        <p class="text-muted">
+        {{-- <p class="text-muted">
             added {{ $comment->created_at->diffForHumans() }}
-        </p>
+        </p> --}}
+        {{-- Timestamp Component --}}
+        <x-updated :date="$comment->created_at"></x-updated>
+
     @empty
         <p>No comments yet!</p>
     @endforelse

@@ -12,10 +12,8 @@
     @endif
 </h3>
 
-{{-- Timestamp --}}
-<p class="text-muted">Added {{ $post->created_at->diffForHumans() }}
-    by {{ $post->user->name }}
-</p>
+{{-- Timestamp Component --}}
+<x-updated :date="$post->created_at" :name="$post->user->name"></x-updated>
 
 {{-- Display Comment Count --}}
 @if ($post->comments_count)
