@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         // Blade::aliasComponent('components.badge', 'badge'); // Alias doesn't work in Laravel 8+
 
         // Menggunakan Activity composer untuk membagikan data antar views
-        view()->composer('posts.index', ActivityComposer::class);
+        // view()->composer('*', ActivityComposer::class); // Untuk semua views
+        view()->composer(['posts.index', 'posts.show'], ActivityComposer::class);
     }
 }
