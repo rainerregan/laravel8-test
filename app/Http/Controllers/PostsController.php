@@ -77,19 +77,17 @@ class PostsController extends Controller
 
         // Validation Menggunakan Custom Request Class
         $validated = $request->validated();
-
         $validated['user_id'] = $request->user()->id; // define user ID
-
-        // Instantiate Model
-        // $new_post = new BlogPost();
-
-        // Assign Values
-        // $new_post->title = $validated['title'];
-        // $new_post->content = $validated['content'];
-        // $new_post->save();
 
         // Cara Lain Untuk buat Model
         $post = BlogPost::create($validated);
+
+        $hasFile = $request->hasFile('thumbnail');
+
+        if($hasFile){
+            $file = $request->file('thumbnail');
+            $file->store('thumbnails');
+        }
 
         // Flash message: Menampilkan message untuk 1 kali dengan menggunakan sessions
         session()->flash('status', 'The blog post was created!');

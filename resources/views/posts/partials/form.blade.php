@@ -18,4 +18,9 @@
     @enderror --}}
 </div>
 
+<div class="form-group">
+    <label for="thumbnail">Thumbnail</label>
+    <input class="form-control-file" id="thumbnail" type="file" name="thumbnail">
+</div>
+
 <x-errors :errors="$errors"></x-errors>

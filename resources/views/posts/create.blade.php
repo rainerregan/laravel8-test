@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- Membuat sebuah form yang ketika di submit akan mengirim data ke posts.store --}}
-    <form action="{{ route('posts.store') }}" method="POST">
+    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         @include('posts.partials.form')
