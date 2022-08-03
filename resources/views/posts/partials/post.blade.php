@@ -24,29 +24,34 @@
 
 <div class="mb-3">
 
-    {{-- Display tombol edit jika bisa update --}}
-    @can('update', $post)
-        {{-- Tombol Edit --}}
-        <a href="{{ route('posts.edit', ['post' => $post->id]) }}" class="btn btn-primary">
-            Edit
-        </a>
-    @endcan
+    {{-- Optimisasi dan menampilkan gate jika user telah ter-login --}}
+    @auth
+        {{-- Display tombol edit jika bisa update --}}
+        @can('update', $post)
+            {{-- Tombol Edit --}}
+            <a href="{{ route('posts.edit', ['post' => $post->id]) }}" class="btn btn-primary">
+                Edit
+            </a>
+        @endcan
+    @endauth
 
     {{-- @cannot('delete', $post)
         <p>You can't delete this post</p>
     @endcannot --}}
 
-    @if (!$post->trashed())
-        {{-- Display tombol delete jika dapat delete --}}
-        @can('delete', $post)
-            {{-- Tombol Delete --}}
-            {{-- Simulate DELETE HTTP request by using form --}}
-            <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
-                @csrf
-                @method('DELETE')
+    {{-- Optimisasi untuk render hanya jika user telah ter login --}}
+    @auth
+        @if (!$post->trashed())
+            {{-- Display tombol delete jika dapat delete --}}
+            @can('delete', $post)
+                {{-- Tombol Delete: Simulate DELETE HTTP request by using form --}}
+                <form class="d-inline" action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
 
-                <input type="submit" value="Delete!" class="btn btn-primary">
-            </form>
-        @endcan
-    @endif
+                    <input type="submit" value="Delete!" class="btn btn-primary">
+                </form>
+            @endcan
+        @endif
+    @endauth
 </div>
