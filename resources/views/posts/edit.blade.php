@@ -4,7 +4,7 @@
 
 @section('content')
     {{-- Membuat sebuah form yang ketika di submit akan mengirim data ke posts.store --}}
-    <form action="{{ route('posts.update', ['post' => $post->id]) }}" method="POST">
+    <form action="{{ route('posts.update', ['post' => $post->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         @include('posts.partials.form')

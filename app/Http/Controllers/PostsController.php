@@ -73,7 +73,7 @@ class PostsController extends Controller
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('thumbnails');
             $post->image()->save(
-                Image::create(['path' => $path])
+                Image::make(['path' => $path])
             );
         }
 
@@ -155,9 +155,6 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        // Mendapatkan data blogpost
-        $post = BlogPost::findOrFail($id);
-
         // Verify apakah user dapat mengedit data posting
         // User yang bukan owner dari postingan tidak dapat edit
         // if(Gate::denies('update-post', $post)){
@@ -169,6 +166,8 @@ class PostsController extends Controller
         // Cara lain gunakan Gate adalah dengan menggunakan authorize
         // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
         // $this->authorize('posts.update', $post);
+
+        $post = BlogPost::findOrFail($id); // Mendapatkan data blogpost
 
         /**
          * Ketika kita sudah menggunakan policies mapping pada AuthServiceProvider, kita dapat menggunakan nama langsung dan tidak panjang
@@ -193,10 +192,6 @@ class PostsController extends Controller
      */
     public function update(StorePost $request, $id)
     {
-
-        // Get the post, check if exists
-        $post = BlogPost::findOrFail($id);
-
         // Verify apakah user dapat mengedit data posting
         // if(Gate::denies('update-post', $post)){
         //     // Abort akan redirect ke error page
@@ -208,6 +203,8 @@ class PostsController extends Controller
         // Authorize hanya mengizinkan orang dengan id yang sama dengan owner postingan untuk melakukan edit
         // $this->authorize('posts.update', $post);
 
+        $post = BlogPost::findOrFail($id); // Get the post, check if exists
+
         /**
          * Ketika kita sudah menggunakan policies mapping pada AuthServiceProvider, kita dapat menggunakan nama langsung dan tidak panjang
          * @see AuthServiceProvider
@@ -216,42 +213,30 @@ class PostsController extends Controller
         $this->authorize('update', $post);
         # $this->authorize($post); // Cara Lain
 
-        // Validating
-        $validated = $request->validated();
-
-        // Fill object with validated
-        $post->fill($validated);
+        $validated = $request->validated(); // Validating form
+        $post->fill($validated); // Fill object with validated value
 
         // Handle Upload
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('thumbnails');
 
+
             if($post->image){
-                // Jika sudah ada Image, Delete
-                Storage::delete($post->image->path);
-
-                // Set new path untuk post yang diedit
-                $post->image->path = $path;
-
-                // Save Image dan changes
-                $post->image->save();
+                Storage::delete($post->image->path); // Jika sudah ada Image, Delete
+                $post->image->path = $path; // Set new path untuk post yang diedit
+                $post->image->save(); // Save Image dan changes
             } else {
                 // Save path ke dalam model Image didalam post
                 $post->image()->save(
-                    Image::create(['path' => $path])
+                    Image::make(['path' => $path]) // Make image
                 );
             }
 
         }
 
-        // Save post
-        $post->save();
-
-        // tell user from flash message
-        session()->flash('status', 'Blog post was updated');
-
-        // Redirect
-        return redirect()->route('posts.show', ['post' => $post->id]);
+        $post->save(); // Save post
+        session()->flash('status', 'Blog post was updated'); // tell user from flash message
+        return redirect()->route('posts.show', ['post' => $post->id]); // Redirect
     }
 
     /**

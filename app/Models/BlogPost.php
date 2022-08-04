@@ -51,7 +51,7 @@ class BlogPost extends Model
     }
 
     public function image(){
-        return $this->morphOne(Image::class, 'imageable');
+        return $this->morphOne('App\Models\Image', 'imageable');
     }
 
     // Local Query Scope
