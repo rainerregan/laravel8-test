@@ -29,7 +29,7 @@ class PostCommentController extends Controller
 
         // Sending email
         Mail::to($post->user)->send(
-            new CommentPostedMarkdown()
+            new CommentPostedMarkdown($comment)
         );
 
         return redirect()->back()->withStatus('Comment was created!');
