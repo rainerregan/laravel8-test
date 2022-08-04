@@ -51,9 +51,12 @@ class PostTest extends TestCase
     public function testSee1BlogPostWithComments(){
         // Arrange
         $post = $this->createDummyBlogPost();
+        $user = $this->user();
 
         Comment::factory()->count(4)->create([
-            'blog_post_id' => $post->id
+            'commentable_id' => $post->id,
+            'commentable_type' => BlogPost::class,
+            'user_id' => $user->id
         ]);
 
         $response = $this->get('/posts');
