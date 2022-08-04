@@ -19,17 +19,17 @@ class CommentsTableSeeder extends Seeder
         // Mendapatkan semua data posts
         $posts = BlogPost::all();
 
+        // Mendapatkan semua data users
+        $users = User::all();
+
         // Fungsi akan mereturn null jika blog post tidak tersedia.
-        if($posts->count() === 0){
-            $this->command->info("There are no blog posts, so no comments will be added");
+        if($posts->count() === 0 || $users->count() === 0){
+            $this->command->info("There are no blog posts or users, so no comments will be added");
             return;
         }
 
         // Mendapatkan jumlah comments yang ingin dibuat oleh user.
         $commentsCount = (int)$this->command->ask('How many comments would you like to create?', 150);
-
-        // Mendapatkan semua data users
-        $users = User::all();
 
         /*
          |========================================================================
@@ -45,7 +45,18 @@ class CommentsTableSeeder extends Seeder
         Comment::factory($commentsCount)
             ->make() // Membuat 150 unsaved comment
             ->each(function($comment) use($posts, $users){ // Looping
-                $comment->blog_post_id = $posts->random()->id;
+                $comment->commentable_id = $posts->random()->id;
+                $comment->commentable_type = BlogPost::class;
+                $comment->user_id = $users->random()->id; // Meng-assign setiap user_id untuk setiap post dengan data user_id random dari Users yang dibuat sebelumnya.
+                $comment->save();
+            });
+
+        // Seeder untuk comment user
+        Comment::factory($commentsCount)
+            ->make() // Membuat 150 unsaved comment
+            ->each(function($comment) use($users){ // Looping
+                $comment->commentable_id = $users->random()->id;
+                $comment->commentable_type = User::class;
                 $comment->user_id = $users->random()->id; // Meng-assign setiap user_id untuk setiap post dengan data user_id random dari Users yang dibuat sebelumnya.
                 $comment->save();
             });
