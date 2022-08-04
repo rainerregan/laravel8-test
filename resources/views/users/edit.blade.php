@@ -7,7 +7,7 @@
 
         <div class="row">
             <div class="col-4">
-                <img src="" alt="img-thumbnail avatar">
+                <img src="" alt="" class="img-thumbnail avatar">
 
                 <div class="card mt-4">
                     <div class="card-body">

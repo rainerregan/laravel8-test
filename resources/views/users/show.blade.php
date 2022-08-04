@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-4">
-            <img src="" alt="img-thumbnail avatar">
+            <img src="" class="img-thumbnail avatar">
         </div>
 
         <div class="col-8">
