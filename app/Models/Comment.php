@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use App\Models\BlogPost;
+use App\Models\Tag;
 
 class Comment extends Model
 {
@@ -19,6 +20,15 @@ class Comment extends Model
     public function commentable()
     {
         return $this->morphTo();
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable')->withTimestamps();
     }
 
     // Local Query Scope
@@ -45,7 +55,4 @@ class Comment extends Model
         });
     }
 
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
 }
