@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreComment;
 use App\Mail\CommentPosted;
+use App\Mail\CommentPostedMarkdown;
 use App\Models\BlogPost;
 use Illuminate\Support\Facades\Mail;
 
@@ -28,7 +29,7 @@ class PostCommentController extends Controller
 
         // Sending email
         Mail::to($post->user)->send(
-            new CommentPosted($comment)
+            new CommentPostedMarkdown()
         );
 
         return redirect()->back()->withStatus('Comment was created!');
