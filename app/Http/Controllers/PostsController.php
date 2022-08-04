@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
-use App\Http\ViewComposers\ActivityComposer;
 use App\Models\BlogPost;
 use App\Models\Image;
-use App\Models\User;
-use App\Providers\AppServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
