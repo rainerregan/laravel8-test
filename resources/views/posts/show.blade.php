@@ -45,20 +45,8 @@
 
 
             <h4>Comments</h4>
-
-            @include('comments.partials.form')
-
-            @forelse ($post->comments as $comment)
-                <p>
-                    {{ $comment->content }},
-                </p>
-
-                {{-- Timestamp Component --}}
-                <x-updated :date="$comment->created_at" :name="$comment->user->name"></x-updated>
-
-            @empty
-                <p>No comments yet!</p>
-            @endforelse
+            <x-comment-form :route="route('posts.comments.store', ['post' =>$post->id])"></x-comment-form>
+            <x-comment-list :comments="$post->comments"></x-comment-list>
         </div>
         <div class="col-4">
             @include('posts.partials.activity')
