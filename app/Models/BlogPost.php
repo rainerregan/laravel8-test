@@ -12,6 +12,7 @@ use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Comment;
+use App\Traits\Taggable;
 
 /*
  |==================================================================
@@ -29,6 +30,8 @@ class BlogPost extends Model
     // Import Dependecy untuk menggunakan Soft Delete
     use SoftDeletes;
 
+    use Taggable;
+
     // Fillable berfungsi untuk menentukan field apa saja yang boleh untuk
     // dimodifikasi melalui mass assignment.
     protected $fillable = ['title', 'content', 'user_id'];
@@ -41,11 +44,6 @@ class BlogPost extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function tags()
-    {
-        return $this->morphToMany(Tag::class, 'taggable')->withTimestamps();
     }
 
     public function image(){

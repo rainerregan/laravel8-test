@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use App\Models\BlogPost;
 use App\Models\Tag;
+use App\Traits\Taggable;
 
 class Comment extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Taggable;
 
     protected $fillable = ['user_id', 'content'];
 
@@ -24,11 +26,6 @@ class Comment extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
-    }
-
-    public function tags()
-    {
-        return $this->morphToMany(Tag::class, 'taggable')->withTimestamps();
     }
 
     // Local Query Scope
