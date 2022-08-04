@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
+use App\Models\BlogPost;
 
 class Comment extends Model
 {
@@ -16,8 +16,9 @@ class Comment extends Model
 
     protected $fillable = ['user_id', 'content'];
 
-    public function blogPost(){
-        return $this->belongsTo('App\Models\BlogPost');
+    public function commentable()
+    {
+        return $this->morphTo();
     }
 
     // Local Query Scope
@@ -36,9 +37,11 @@ class Comment extends Model
         // static::addGlobalScope(new LatestScope);
         // Event untuk updating
         static::creating(function (Comment $comment) {
-            // Menghapus cache untuk post ketika post dilakukan update
-            Cache::tags(['blog-post'])->forget("blog-post-{$comment->blog_post_id}");
-            Cache::tags(['blog-post'])->forget("mostCommented");
+            if($comment->commentable_type === BlogPost::class){
+                // Menghapus cache untuk post ketika post dilakukan update
+                Cache::tags(['blog-post'])->forget("blog-post-{$comment->commentable_id}");
+                Cache::tags(['blog-post'])->forget("mostCommented");
+            }
         });
     }
 

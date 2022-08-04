@@ -11,6 +11,7 @@ use App\Scopes\DeletedAdminScope;
 use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Comment;
 
 /*
  |==================================================================
@@ -32,12 +33,9 @@ class BlogPost extends Model
     // dimodifikasi melalui mass assignment.
     protected $fillable = ['title', 'content', 'user_id'];
 
-    // One-to-Many relationship eloquent model di Laravel
-    // Satu blog post bisa memiliki banyak comments
     public function comments()
     {
-        // Local query scope
-        return $this->hasMany('App\Models\Comment')->latest();
+        return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 
     public function user()
