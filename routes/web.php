@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\PostTagController;
+use App\Http\Controllers\UserController;
 use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -128,16 +129,13 @@ use Illuminate\Support\Facades\Route;
 
 
 // Contoh menggunakan controller
-Route::get('/', [HomeController::class, 'home'])
-    ->name('home.index');
+Route::get('/', [HomeController::class, 'home'])->name('home.index');
     // ->middleware('auth'); // Requesting Auth to access
 
-Route::get('/contact', [HomeController::class, 'contact'])
-    ->name('home.contact');
+Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
 
 // Resource Controller
 Route::resource('posts', PostsController::class); // Using all controller method
-    // ->only(['index', 'show', 'create', 'store', 'edit', 'update']);
 
 Auth::routes();
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -149,9 +147,9 @@ Auth::routes();
  * @see AuthServiceProvider
  */
 Route::get('/secret', [HomeController::class, 'secret'])
-    ->name('secret')
-    ->middleware('can:home.secret'); // Menggunakan can middleware untuk menggunakan gate
+    ->name('secret')->middleware('can:home.secret'); // Menggunakan can middleware untuk menggunakan gate
 
 Route::get('/posts/tag/{tag}', [PostTagController::class, 'index'])->name('posts.tags.index');
 
 Route::resource('posts.comments', PostCommentController::class)->only(['store']);
+Route::resource('users', UserController::class)->only(['show', 'edit', 'update']);

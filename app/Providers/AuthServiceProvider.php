@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Policies\BlogPostPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,7 +18,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-        'App\Models\BlogPost' => 'App\Policies\BlogPostPolicy'
+        'App\Models\BlogPost' => 'App\Policies\BlogPostPolicy',
+        User::class => UserPolicy::class
     ];
 
     /**
@@ -30,6 +33,13 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('home.secret', function($user) {
             return $user->is_admin;
+        });
+
+        // Gate untuk admin only, bisa update dan delete
+        Gate::before(function ($user, $ability){
+            if ($user->is_admin && in_array($ability, ['update', 'delete'])) {
+                return true; // Return true, jika user merupakan admin.
+            }
         });
 
 
@@ -55,11 +65,11 @@ class AuthServiceProvider extends ServiceProvider
         // Parameter user adalah parameter yang di provide oleh laravel
         // Parameter ability adalah action yang akan kita cek, seperti 'update-post'
         # Gate dibawah berfungsi untuk memberikan ability bagi admin
-        Gate::before(function ($user, $ability){
-            if ($user->is_admin && in_array($ability, ['update', 'delete'])) {
-                return true; // Return true, jika user merupakan admin.
-            }
-        });
+        // Gate::before(function ($user, $ability){
+        //     if ($user->is_admin && in_array($ability, ['update', 'delete'])) {
+        //         return true; // Return true, jika user merupakan admin.
+        //     }
+        // });
 
         // After dipanggil untuk mengecek setelah dilakukan pengecekan lainnya
         // Gate::after(function($user, $ability, $result) {
