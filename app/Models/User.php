@@ -48,6 +48,20 @@ class User extends Authenticatable
         return $this->hasMany(BlogPost::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function commentsOn()
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
+    }
+
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
     public function scopeWithMostBlogPosts(Builder $query)
     {
         // Akan menambahkan colum dengan nama blog_posts_count
@@ -65,19 +79,5 @@ class User extends Authenticatable
         )
         ->has('blogPosts', '>=', 2)
         ->orderby('blog_posts_count', 'desc');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function commentsOn()
-    {
-        return $this->morphMany(Comment::class, 'commentable')->latest();
-    }
-
-    public function image(){
-        return $this->morphOne(Image::class, 'imageable');
     }
 }
