@@ -36,4 +36,9 @@ class PostCommentController extends Controller
 
         return redirect()->back()->withStatus('Comment was created!');
     }
+
+    public function index(BlogPost $post)
+    {
+        return $post->comments()->with('user')->get();
+    }
 }
