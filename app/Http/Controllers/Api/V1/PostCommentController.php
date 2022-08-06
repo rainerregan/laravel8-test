@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreComment;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use App\Http\Resources\Comment as CommentResource;
+use App\Events\CommentPosted as EventsCommentPosted;
 
 class PostCommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct()
+    {
+        $this->middleware('auth:api')->only(['store']);
+    }
+
     public function index(BlogPost $post, Request $request)
     {
         $perPage = $request->input('per_page') ?? 15;
@@ -24,15 +26,17 @@ class PostCommentController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(BlogPost $post, StoreComment $request)
     {
-        //
+        $comment = $post->comments()->create([
+            'content' => $request->input('content'),
+            'user_id' => $request->user()->id
+        ]);
+
+        // Create event untuk menghandle semua pengiriman email.
+        event(new EventsCommentPosted($comment));
+
+        return new CommentResource($comment);
     }
 
     /**
