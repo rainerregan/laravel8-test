@@ -32,3 +32,11 @@ Route::prefix('v2')->name('api.v1.')->group(function () {
         return response()->json(['status' => true]);
     });
 });
+
+
+// Route ini selalu HARUS diletakkan di paling bawah
+Route::fallback(function(){
+    return response()->json([
+        'message' => 'Not Found'
+    ], 404);
+})->name('api.fallback');
