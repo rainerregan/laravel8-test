@@ -18,9 +18,7 @@ class ApiPostCommentsTest extends TestCase
      */
     public function testNewBlogPostDoesNotHaveComments()
     {
-        BlogPost::factory()->create([
-            'user_id' => $this->user()->id
-        ]);
+        $this->post_create();
 
         $response = $this->json("GET", 'api/v1/posts/1/comments');
 
@@ -31,12 +29,10 @@ class ApiPostCommentsTest extends TestCase
 
     public function testBlogPostHas10Comments()
     {
-        BlogPost::factory()->create([
-            'user_id' => $this->user()->id
-        ])->each(function (BlogPost $post) {
+        $this->post_create()->each(function (BlogPost $post) {
             $post->comments()->saveMany(
                 Comment::factory(10)->make([
-                    'user_id'=>$this->user()->id
+                    'user_id' => $this->user()->id
                 ])
             );
         });
@@ -61,5 +57,44 @@ class ApiPostCommentsTest extends TestCase
                 'meta'
             ])
             ->assertJsonCount(10, 'data');
+    }
+
+    public function testingAddingCommentsWhenNotAuthenticated()
+    {
+        $this->post_create();
+
+        $response = $this->json('POST', 'api/v1/posts/3/comments', [
+            'content' => 'Hello'
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function testingAddingCommentsWhenAuthenticated()
+    {
+        $this->post_create();
+
+        $response = $this->actingAs($this->user(), 'api')->json('POST', 'api/v1/posts/4/comments', [
+            'content' => 'Hello'
+        ]);
+
+        $response->assertStatus(201);
+    }
+
+    public function testAddingCommentWithInvalidData()
+    {
+        $this->post_create();
+
+        $response = $this->actingAs($this->user(), 'api')->json('POST', 'api/v1/posts/5/comments', []);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "content" => [
+                        "The content field is required."
+                    ]
+                ]
+            ]);
     }
 }
