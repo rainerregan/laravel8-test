@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BlogPostPosted;
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use App\Models\Image;
@@ -73,6 +74,9 @@ class PostsController extends Controller
                 Image::make(['path' => $path])
             );
         }
+
+        // create event
+        event(new BlogPostPosted($post));
 
         // Flash message: Menampilkan message untuk 1 kali dengan menggunakan sessions
         session()->flash('status', 'The blog post was created!');
