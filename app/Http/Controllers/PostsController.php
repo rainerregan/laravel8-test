@@ -12,12 +12,15 @@ use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
+    private $counter;
 
-    public function __construct()
+    public function __construct(Counter $counter)
     {
         // Melindungi pages yang dimasukkan dibawah untuk tidak dapat diakses dengan user yang tidak ter login.
         $this->middleware('auth')
             ->only(['create', 'store', 'edit', 'update', 'destroy']);
+
+        $this->counter = $counter;
     }
 
     /**
@@ -94,7 +97,6 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-
         // Caching: menggunakan dynamic key
         // Cache ini akan dihapus ketika post di update
         $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function () use ($id) {
@@ -102,12 +104,12 @@ class PostsController extends Controller
                 ->findOrFail($id);
         });
 
-        $counter = resolve(Counter::class);
+        // $counter = resolve(Counter::class);
 
         // Menampilkan halaman show
         return view('posts.show', [
             'post' => $blogPost,
-            'counter' => $counter->increment("blog-post-{$id}", ['blog-post'])
+            'counter' => $this->counter->increment("blog-post-{$id}", ['blog-post'])
         ]);
     }
 
