@@ -4,13 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Events\CommentPosted as EventsCommentPosted;
 use App\Http\Requests\StoreComment;
-use App\Jobs\NotifyUsersPostWasCommented;
-use App\Jobs\ThrottleMail;
-use App\Mail\CommentPosted;
-use App\Mail\CommentPostedMarkdown;
 use App\Models\BlogPost;
-use Illuminate\Support\Facades\Mail;
-use App\Jobs\ThrottledMail;
+use App\Http\Resources\Comment as CommentResource;
 
 /**
  * Post Comment Controller
@@ -39,6 +34,7 @@ class PostCommentController extends Controller
 
     public function index(BlogPost $post)
     {
-        return $post->comments()->with('user')->get();
+        return CommentResource::collection($post->comments()->with('user')->get());
+        // return $post->comments()->with('user')->get();
     }
 }
