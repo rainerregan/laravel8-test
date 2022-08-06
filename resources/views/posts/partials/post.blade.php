@@ -18,11 +18,12 @@
 <x-tags :tags="$post->tags"></x-tags>
 
 {{-- Display Comment Count --}}
-@if ($post->comments_count)
+{{ trans_choice('messages.comments', $post->comments_count) }}
+{{-- @if ($post->comments_count)
     <p>{{ $post->comments_count }} comments</p>
 @else
     <p>No comments yet</p>
-@endif
+@endif --}}
 
 <div class="mb-3">
 
