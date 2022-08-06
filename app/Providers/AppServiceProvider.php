@@ -8,6 +8,8 @@ use App\Models\Comment;
 use App\Observers\BlogPostObserver;
 use App\Observers\CommentObserver;
 use App\Services\Counter;
+use Illuminate\Contracts\Cache\Factory;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -47,7 +49,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Service container
         $this->app->singleton(Counter::class, function($app) {
-            return new Counter(env('COUNTER_TIMEOUT'));
+            return new Counter(
+                $app->make(Factory::class),
+                $app->make(Session::class),
+                env('COUNTER_TIMEOUT')
+            );
         });
 
         // $this->app->when(Counter::class)->needs('$timeout')->give(env('COUNTER_TIMEOUT'));

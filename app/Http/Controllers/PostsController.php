@@ -20,6 +20,7 @@ class PostsController extends Controller
         $this->middleware('auth')
             ->only(['create', 'store', 'edit', 'update', 'destroy']);
 
+        // Dependecy injection
         $this->counter = $counter;
     }
 

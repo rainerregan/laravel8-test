@@ -2,26 +2,36 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
+// use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Cache\Factory as Cache;
+use Illuminate\Contracts\Session\Session;
 
 class Counter
 {
     private $timeout;
+    private $cache;
+    private $session;
+    private $supportsTags;
 
-    public function __construct(int $timeout)
+    public function __construct(Cache $cache, Session $session, int $timeout)
     {
         $this->timeout = $timeout;
+        $this->cache = $cache;
+        $this->session = $session;
+        $this->supportsTags = method_exists($cache, 'tags');
     }
 
     public function increment(string $key, array $tags = null) : int
     {
         // Cache for Counter
-        $sessionId = session()->getId();
+        $sessionId = $this->session->getId();
         $counterKey = "{$key}-counter";
         $usersKey = "{$key}-users";
 
+        $cache = $this->supportsTags && null !== $tags ? $this->cache->tags($tags) : $this->cache;
+
         // Get data $userKey di cache dan dengan defaultvalue adalah [] empty
-        $users = Cache::tags(['blog-post'])->get($usersKey, []);
+        $users = $cache->get($usersKey, []);
         $usersUpdate = [];
         $diffrence = 0;
         $now = now();
@@ -43,17 +53,17 @@ class Counter
         }
 
         $usersUpdate[$sessionId] = $now;
-        Cache::tags(['blog-post'])->forever($usersKey, $usersUpdate);
+        $cache->forever($usersKey, $usersUpdate);
 
         // Mengecek counter apakah ada di cache
-        if (!Cache::tags(['blog-post'])->has($counterKey)) {
-            Cache::tags(['blog-post'])->forever($counterKey, 1);
+        if (!$cache->has($counterKey)) {
+            $cache->forever($counterKey, 1);
         } else {
-            Cache::tags(['blog-post'])->increment($counterKey, $diffrence);
+            $cache->increment($counterKey, $diffrence);
         }
 
         // Mengambil data counter dari cache
-        $counter = Cache::tags(['blog-post'])->get($counterKey);
+        $counter = $cache->get($counterKey);
 
         return $counter;
     }
