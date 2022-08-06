@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlogPost;
 use Illuminate\Http\Request;
+use App\Http\Resources\Comment as CommentResource;
 
 class PostCommentController extends Controller
 {
@@ -12,9 +14,14 @@ class PostCommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(BlogPost $post, Request $request)
     {
-        return response()->json(['comments' => []]);
+        $perPage = $request->input('per_page') ?? 15;
+        return CommentResource::collection(
+            $post->comments()->with('user')->paginate($perPage)->appends([
+                'per_page' =>$perPage
+            ])
+        );
     }
 
     /**
