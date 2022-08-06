@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Contracts\CounterContract;
 use App\Http\ViewComposers\ActivityComposer;
 use App\Models\BlogPost;
 use App\Models\Comment;
 use App\Observers\BlogPostObserver;
 use App\Observers\CommentObserver;
 use App\Services\Counter;
+use App\Services\DummyCounter;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Blade;
@@ -57,5 +59,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // $this->app->when(Counter::class)->needs('$timeout')->give(env('COUNTER_TIMEOUT'));
+
+        // Contract
+        $this->app->bind(
+            CounterContract::class,
+            Counter::class
+        );
     }
 }
