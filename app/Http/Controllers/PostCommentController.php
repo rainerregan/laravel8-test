@@ -30,10 +30,10 @@ class PostCommentController extends Controller
             'user_id' => $request->user()->id
         ]);
 
-        ThrottledMail::dispatch(new CommentPostedMarkdown($comment), $post->user)
-            ->onQueue('high');
-        NotifyUsersPostWasCommented::dispatch($comment)
-            ->onQueue('low');
+        ThrottledMail::dispatch(new CommentPostedMarkdown($comment), $post->user);
+            // ->onQueue('high');
+        NotifyUsersPostWasCommented::dispatch($comment);
+            // ->onQueue('low');
 
         return redirect()->back()->withStatus('Comment was created!');
     }

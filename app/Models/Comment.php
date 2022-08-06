@@ -41,15 +41,8 @@ class Comment extends Model
     public static function boot(){
         parent::boot();
 
-        // static::addGlobalScope(new LatestScope);
-        // Event untuk updating
-        static::creating(function (Comment $comment) {
-            if($comment->commentable_type === BlogPost::class){
-                // Menghapus cache untuk post ketika post dilakukan update
-                Cache::tags(['blog-post'])->forget("blog-post-{$comment->commentable_id}");
-                Cache::tags(['blog-post'])->forget("mostCommented");
-            }
-        });
+        // Handling events akan dilakukan menggunakan observer
+        // @see CommentObserver
     }
 
 }
