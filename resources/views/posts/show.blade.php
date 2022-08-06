@@ -36,7 +36,7 @@
 
             {{-- Updated Timestamp Component --}}
             <x-updated :date="$post->created_at">
-                Updated
+                {{ __('Updated') }}
             </x-updated>
 
             <x-tags :tags="$post->tags"></x-tags>
