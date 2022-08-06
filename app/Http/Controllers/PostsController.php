@@ -102,7 +102,7 @@ class PostsController extends Controller
                 ->findOrFail($id);
         });
 
-        $counter = new Counter();
+        $counter = resolve(Counter::class);
 
         // Menampilkan halaman show
         return view('posts.show', [
